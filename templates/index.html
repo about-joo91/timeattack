@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/jquery-cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // 받아온 데이터를 화면에 넣기
+            $.ajax({
+                type: "GET",
+                url: "/posts",
+                data: {},
+                success: function (response) {
+                    let all_data = response['all_data']
+                    for (let i = 0; i < all_data.length; i++) {
+                        let email = all_data[i]['email']
+                        let comment = all_data[i]['comment']
+                        let tmp_html = `
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <blockquote class="blockquote mb-0">
+                                                    <p>${comment}</p>
+                                                    <footer class="blockquote-footer">${email}</footer>
+                                                </blockquote>
+                                            </div>
+                                        </div>
+                                        `
+                        $('#cards-box').append(tmp_html);
+                    }
+                }
+            })
+        })
+        function post_comment() {
+            let email_give = $('#idInput').val()
+            let comment_give = $('#commentInput').val()
+            $.ajax({
+                type: "POST",
+                url: "/push_post",
+                data: { name_give: name_give, comment_give: comment_give },
+                success: function (response) {
+                    alert(response['msg'])
+                    // 포스트 요청 후 새로고침
+                    window.location.reload()
+                }
+            })
+        }
+    </script>
+</head>
+
+<body>
+
+    <div class="mytitle">
+        <h1>게시판</h1>
+    </div>
+
+    <div class="inputBox">
+        <div class="form-floating mb-3">
+            <input class="form-control" id="idInput">
+            <label for="floatingInput">닉네임</label>
+        </div>
+        <div class="form-floating">
+            <textarea class="form-control" id="commentInput" style="height: 100px"></textarea>
+            <label for="floatingTextarea2">내용</label>
+        </div>
+        <button type="button" class="btn btn-dark" onclick="post_comment()">응원 남기기</button>
+    </div>
+    <div class="quoteBox" id="cards-box">
+
+    </div>
+
+
+</body>
+
+</html>
